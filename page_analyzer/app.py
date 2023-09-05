@@ -1,8 +1,11 @@
+import os
+
 from flask import Flask
 from flask import render_template
 
 # Это callable WSGI-приложение
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
 @app.route('/')
