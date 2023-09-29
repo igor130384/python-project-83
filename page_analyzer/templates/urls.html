@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>Cайты</h1>
+    <table class="table table-light table-hover table-bordered" data-test="urls">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Последняя проверка</th>
+                <th>Код ответа</th>
+            </tr>
+        </thead>
+        {% for url in urls %}
+        <tbody></tbody>
+            <tr>
+                <td>
+                    {{ url[0] }}
+                </td>
+                <td>
+                    <a href="/urls/{{ url[0] }}">{{ url[1] }}</a>
+                </td>
+                <td>
+                    {{ url[2] }}
+                </td>
+                <td>
+                    {{ url[3] }}
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

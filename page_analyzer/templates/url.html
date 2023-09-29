@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+{% if messages %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% endif %}
+<div class="container"> 
+    <h1>Сайт: {{ name }}</h1>
+    <table class="table table-light table-bordered" data-test="url">
+        <tr>
+            <td>ID</td>
+            <td>{{ id_url }}</td>
+        </tr>
+        <tr>
+            <td>Имя</td>
+            <td>{{ name }}</td>
+        </tr>
+        <tr>
+            <td>Дата создания</td>
+            <td>{{ time }}</td>
+        </tr>
+    </table>
+</div>
+<div class="container">
+    <form action="{{ url_for('checks', id=id_url) }}" method="post">
+        <h1>Проверки</h1>
+        <button type="submit" class="btn btn-primary">Запустить проверку</button>   
+    </form>
+    <table class="table table-light table-bordered" data-test="checks">
+        <tr>
+            <th>ID</th>
+            <th>Код ответа</th>
+            <th>h1</th>
+            <th>title</th>
+            <th>description</th>
+            <th>Дата создания</th>
+        </tr>
+        {% for data in url_checks %}
+        {% if data %}
+        <tr>
+            <td>{{ data[0] }}</td>
+            <td>{{ data[2] }}</td>
+            <td>{{ data[3] }}</td>
+            <td>{{ data[4] }}</td>
+            <td>{{ data[5] }}</td>
+            <td>{{ data[6] }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
