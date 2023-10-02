@@ -118,32 +118,31 @@ def checks(id):
     except requests.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
         return redirect(url_for('page_url', id=url[0]))
-    if code == requests.codes.ok:
-        soup = BeautifulSoup(r.text, 'html.parser')
-        if soup.h1:
-            h1 = soup.h1.get_text()
-        else:
-            h1 = ''
-        if soup.title:
-            title = soup.title.get_text()
-        else:
-            title = ''
-        atrmeta = soup.find_all("meta", attrs={"name": "description",
-                                               "content": True})
-        if atrmeta == []:
-            meta = ''
-        else:
-            soup1 = BeautifulSoup(str(atrmeta[0]), 'html.parser')
-            meta = soup1.meta['content']
-        with conn.cursor() as curs:
-            time = date.today()
-            curs.execute("""INSERT INTO url_checks (url_id,
-                            status_code, h1, title, description, created_at)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    if soup.h1:
+        h1 = soup.h1.get_text()
+    else:
+        h1 = ''
+    if soup.title:
+        title = soup.title.get_text()
+    else:
+        title = ''
+    atrmeta = soup.find_all("meta", attrs={"name": "description",
+                                           "content": True})
+    if atrmeta == []:
+        meta = ''
+    else:
+        soup1 = BeautifulSoup(str(atrmeta[0]), 'html.parser')
+        meta = soup1.meta['content']
+    with conn.cursor() as curs:
+        time = date.today()
+        curs.execute("""INSERT INTO url_checks (url_id,
+                        status_code, h1, title, description, created_at)
                             VALUES(%s, %s, %s, %s, %s, %s)""",
-                         (url[0], code, h1, title, meta, time))
-        flash('Страница успешно проверена', 'success')
-        return redirect(url_for('page_url', id=url[0]))
+                     (url[0], code, h1, title, meta, time))
+    flash('Страница успешно проверена', 'success')
+    return redirect(url_for('page_url', id=url[0]))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
