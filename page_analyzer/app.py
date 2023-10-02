@@ -116,8 +116,8 @@ def checks(id):
         r = requests.get(url[1])
         code = r.status_code
     except requests.RequestException:
-            flash('Произошла ошибка при проверке', 'danger')
-            return redirect(url_for('page_url', id=url[0]))
+        flash('Произошла ошибка при проверке', 'danger')
+        return redirect(url_for('page_url', id=url[0]))
     if code == requests.codes.ok:
         soup = BeautifulSoup(r.text, 'html.parser')
         if soup.h1:
@@ -138,16 +138,12 @@ def checks(id):
         with conn.cursor() as curs:
             time = date.today()
             curs.execute("""INSERT INTO url_checks (url_id,
-                                status_code, h1, title, description, created_at)
-                                VALUES(%s, %s, %s, %s, %s, %s)""",
-                     (url[0], code, h1, title, meta, time))
-    flash('Страница успешно проверена', 'success')
-    return redirect(url_for('page_url', id=url[0]))
-
-
+                            status_code, h1, title, description, created_at)
+                            VALUES(%s, %s, %s, %s, %s, %s)""",
+                         (url[0], code, h1, title, meta, time))
+        flash('Страница успешно проверена', 'success')
+        return redirect(url_for('page_url', id=url[0]))
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
