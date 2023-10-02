@@ -42,7 +42,7 @@ def url_post():
         time = date.today()
         with conn.cursor() as curs:
             url_parse = urlparse(data)
-            data = url_parse.scheme + '://' + url_parse.hostname
+            data = url_parse.scheme + '://' + url_parse.netloc
             curs.execute('SELECT id, name FROM urls WHERE name=%s', (data,))
             url = curs.fetchone()
             if url is not None:
@@ -110,7 +110,6 @@ def urls():
 def checks(id):
     with conn.cursor() as curs:
         curs.execute('SELECT id, name FROM urls WHERE id=%s', (id,))
-        # time = date.today()
         url = curs.fetchone()
 
     try:
