@@ -17,12 +17,12 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 load_dotenv()
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DATABASE_URL)
 conn.autocommit = True
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
 @app.route('/')
@@ -108,40 +108,47 @@ def urls():
 
 @app.post('/urls/<id>/checks')
 def checks(id):
+    with conn.cursor() as curs:
+        curs.execute('SELECT id, name FROM urls WHERE id=%s', (id,))
+
+        url = curs.fetchone()
+
     try:
+        time = date.today()
+        r = requests.get(url[1])
+        code = r.status_code
+    except requests.RequestException:
+            flash('Произошла ошибка при проверке', 'danger')
+            return redirect(url_for('page_url', id=url[0]))
+    if code == requests.codes.ok:
+        soup = BeautifulSoup(r.text, 'html.parser')
+        if soup.h1:
+            h1 = soup.h1.get_text()
+        else:
+            h1 = ''
+        if soup.title:
+            title = soup.title.get_text()
+        else:
+            title = ''
+        atrmeta = soup.find_all("meta", attrs={"name": "description",
+                                               "content": True})
+        if atrmeta == []:
+            meta = ''
+        else:
+            soup1 = BeautifulSoup(str(atrmeta[0]), 'html.parser')
+            meta = soup1.meta['content']
         with conn.cursor() as curs:
-            curs.execute('SELECT id, name FROM urls WHERE id=%s', (id,))
-            url = curs.fetchone()
-            time = date.today()
-            r = requests.get(url[1])
-            code = r.status_code
-            if code == requests.codes.ok:
-                soup = BeautifulSoup(r.text, 'html.parser')
-                if soup.h1:
-                    h1 = soup.h1.get_text()
-                else:
-                    h1 = ''
-                if soup.title:
-                    title = soup.title.get_text()
-                else:
-                    title = ''
-                atrmeta = soup.find_all("meta", attrs={"name": "description",
-                                                       "content": True})
-                if atrmeta == []:
-                    meta = ''
-                else:
-                    soup1 = BeautifulSoup(str(atrmeta[0]), 'html.parser')
-                    meta = soup1.meta['content']
-                curs.execute("""INSERT INTO url_checks (url_id,
+            curs.execute("""INSERT INTO url_checks (url_id,
                                 status_code, h1, title, description, created_at)
                                 VALUES(%s, %s, %s, %s, %s, %s)""",
-                             (url[0], code, h1, title, meta, time))
-                flash('Страница успешно проверена', 'success')
-                return redirect(url_for('page_url', id=url[0]))
-    except requests.HTTPError:
-        flash('Произошла ошибка при проверке', 'danger')
+                     (url[0], code, h1, title, meta, time))
+    flash('Страница успешно проверена', 'success')
     return redirect(url_for('page_url', id=url[0]))
+
+
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
