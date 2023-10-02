@@ -11,11 +11,11 @@ import os
 import psycopg2
 import validators
 from dotenv import load_dotenv
-from datetime import date
+import datetime
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-
+from requests import ConnectionError, HTTPError
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DATABASE_URL)
@@ -39,7 +39,7 @@ def url_post():
     if not data:
         flash('URL обязателен', 'danger')
     elif validators.url(data) and len(data) <= 255:
-        time = date.today()
+        time = datetime.date.today()
         with conn.cursor() as curs:
             url_parse = urlparse(data)
             data = f"{url_parse.scheme}://{url_parse.netloc}"
@@ -111,11 +111,9 @@ def checks(id):
     with conn.cursor() as curs:
         curs.execute('SELECT id, name FROM urls WHERE id=%s', (id,))
         url = curs.fetchone()
-
     try:
         r = requests.get(url[1])
-        code = r.status_code
-    except requests.RequestException:
+    except (ConnectionError, HTTPError):
         flash('Произошла ошибка при проверке', 'danger')
         return redirect(url_for('page_url', id=url[0]))
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -135,7 +133,8 @@ def checks(id):
         soup1 = BeautifulSoup(str(atrmeta[0]), 'html.parser')
         meta = soup1.meta['content']
     with conn.cursor() as curs:
-        time = date.today()
+        code = r.status_code
+        time = datetime.date.today()
         curs.execute("""INSERT INTO url_checks (url_id,
                         status_code, h1, title, description, created_at)
                             VALUES(%s, %s, %s, %s, %s, %s)""",
@@ -145,4 +144,4 @@ def checks(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
