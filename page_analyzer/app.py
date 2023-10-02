@@ -110,11 +110,10 @@ def urls():
 def checks(id):
     with conn.cursor() as curs:
         curs.execute('SELECT id, name FROM urls WHERE id=%s', (id,))
-
+        # time = date.today()
         url = curs.fetchone()
 
     try:
-        time = date.today()
         r = requests.get(url[1])
         code = r.status_code
     except requests.RequestException:
@@ -138,6 +137,7 @@ def checks(id):
             soup1 = BeautifulSoup(str(atrmeta[0]), 'html.parser')
             meta = soup1.meta['content']
         with conn.cursor() as curs:
+            time = date.today()
             curs.execute("""INSERT INTO url_checks (url_id,
                                 status_code, h1, title, description, created_at)
                                 VALUES(%s, %s, %s, %s, %s, %s)""",
