@@ -7,3 +7,22 @@
 ### APP Page_Analizer
 
 [![Click here](https://page-oli8.onrender.com)](https://page-oli8.onrender.com)
+
+Инструкция по установке
+
+Клонируйте репозиторий на свой локальный компьютер:
+
+git clone https://github.com/igor130384/python-project-83.git
+
+Перейдите в каталог проекта:
+cd python-project-83
+
+Установите зависимости проекта с помощью Poetry:
+poetry install
+
+Активируйте Poetry environment:
+poetry shell
+
+Запустите приложение:
+make start
+Теперь вы можете получить доступ к приложению локально http://localhost:8000/в своем браузере.
