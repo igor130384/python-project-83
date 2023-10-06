@@ -24,6 +24,7 @@ def add_date_time(data, time):
 
 def get_id(data):
     with conn.cursor() as curs:
+
         curs.execute('SELECT id FROM urls WHERE name=%s', (data,))
         id_new = curs.fetchone()
         return id_new
