@@ -47,8 +47,7 @@ def url_post():
         flash('URL обязателен', 'danger')
     elif validators.url(data) and len(data) <= 255:
         time = datetime.date.today()
-        pars_url()
-        url = get_name(data)
+        url = get_name(pars_url(data))
         if url is not None:
             flash('Страница уже существует', 'info')
             return redirect(url_for('page_url', id=url[0]))
