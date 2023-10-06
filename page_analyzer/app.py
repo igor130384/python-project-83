@@ -42,10 +42,10 @@ def url_post():
     data_dict = request.form.to_dict()
     data = data_dict['url']
     time = datetime.date.today()
+    url = get_name(data)
     if not data:
         flash('URL обязателен', 'danger')
     elif validators.url(data) and len(data) <= 255:
-        url = get_name(data)
         if url is not None:
             flash('Страница уже существует', 'info')
             return redirect(url_for('page_url', id=url[0]))
