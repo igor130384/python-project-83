@@ -15,9 +15,9 @@ import datetime
 import requests
 from requests import ConnectionError, HTTPError
 
-from page_analyzer.db_query import get_name, add_date_time, get_id, get_id_url,\
-    get_add_data,\
-    get_url,\
+from page_analyzer.db_query import get_name, add_date_time, get_id, get_id_url, \
+    get_add_data, \
+    get_url, \
     add_data
 from page_analyzer.page import get_content_of_page
 from page_analyzer.url import pars_url
