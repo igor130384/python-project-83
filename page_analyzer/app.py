@@ -8,7 +8,6 @@ from flask import (
     get_flashed_messages,
 )
 import os
-import psycopg2
 import validators
 from dotenv import load_dotenv
 import datetime
@@ -21,14 +20,11 @@ from page_analyzer.db_query import get_name, add_date_time, get_id, get_id_url, 
     add_data
 from page_analyzer.page import get_content_of_page
 from page_analyzer.url import pars_url
-
 load_dotenv()
-DATABASE_URL = os.getenv('DATABASE_URL')
-conn = psycopg2.connect(DATABASE_URL)
-conn.autocommit = True
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+DEBUG_MODE = os.getenv('DEBUG_MODE')
 
 
 @app.route('/')
@@ -116,4 +112,4 @@ def checks(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=DEBUG_MODE)
